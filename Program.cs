@@ -35,19 +35,40 @@ namespace Script1
         // SCRIPT START BELOVE
 
         //;
-
-        public void Main(string args)
+        // ===================== NO COPY BEYOND THIS POINT =========================
+        public void Main(string argument)
         {
             var NUM = 1;
-            Sandbox.ModAPI.Ingame.IMyBlockGroup LIST = GridTerminalSystem.GetBlockGroupWithName("MYPistonGroup");
-            List<Sandbox.ModAPI.Ingame.IMyPistonBase> COCK = new List<Sandbox.ModAPI.Ingame.IMyPistonBase>();
-            LIST.GetBlocksOfType(COCK);
-            foreach (Sandbox.ModAPI.Ingame.IMyPistonBase BLYAT in COCK)
+            var NUM2 = 1;
+            Sandbox.ModAPI.Ingame.IMyBlockGroup LIST = GridTerminalSystem.GetBlockGroupWithName("DOCKYARD");
+
+
+
+            List<Sandbox.ModAPI.Ingame.IMyPistonBase> PISTON = new List<Sandbox.ModAPI.Ingame.IMyPistonBase>();
+            LIST.GetBlocksOfType(PISTON);
+            List<Sandbox.ModAPI.Ingame.IMyShipWelder> WELDER = new List<Sandbox.ModAPI.Ingame.IMyShipWelder>();
+            LIST.GetBlocksOfType(WELDER);
+
+            foreach (Sandbox.ModAPI.Ingame.IMyShipWelder BLYAT in WELDER)
             {
-                BLYAT.CustomName = ($"PISTON {NUM}");
-                NUM++; 
+                BLYAT.CustomName = ($"[DY] WELDER {NUM2}");
+                NUM2++;
             }
+
+            foreach (Sandbox.ModAPI.Ingame.IMyPistonBase BLYAT in PISTON)
+            {
+                BLYAT.CustomName = ($"[DY] PISTON {NUM}");
+                NUM++;
+
+                if (argument == "OwO")
+                {
+                    BLYAT.Reverse();
+                }
+
+            }
+
         }
+        // ================================================
     }
 }
 
