@@ -19,6 +19,7 @@ using System.Runtime.CompilerServices;
 using VRage.Library.Utils;
 using Sandbox.ModAPI.Weapons;
 using Sandbox.Engine.Networking;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Xep
 {
@@ -36,7 +37,6 @@ namespace Xep
         //
         //
         // ===================== NO COPY ABOVE THIS POINT =========================
-
         IMyProjector projector;
         IMyShipWelder welder;
         IMyPistonBase piston;
@@ -44,14 +44,17 @@ namespace Xep
         List<IMyTerminalBlock> piston_list;
         List<IMyTerminalBlock> welder_list;
         List<IMyTerminalBlock> projector_list;
-
-
-
-        public Program ()
+        public Program()
         {
             piston_list = new List<IMyTerminalBlock>();
             welder_list = new List<IMyTerminalBlock>();
             projector_list = new List<IMyTerminalBlock>();
+
+            Echo("All preps are done.\n" +
+                 "Now type \"+R\" for script to start.\n" +
+                 "Double check that your projection is alligned correctly.\n");
+            Runtime.UpdateFrequency = UpdateFrequency.Update10;
+
         }
 
         public void Main(string argument)
@@ -64,39 +67,48 @@ namespace Xep
             var NUM = 1;
             var NUM2 = 1;
 
-            foreach (IMyTerminalBlock PROJECTOR in projector_list)
-            { PROJECTOR.CustomName = ("[DY] PROJECTOR"); 
-              projector = (IMyProjector)PROJECTOR;
+            foreach (IMyProjector PROJECTOR in projector_list)
+            { PROJECTOR.CustomName = ("[DY] PROJECTOR");
+                projector = PROJECTOR;
             }
 
-            foreach (IMyTerminalBlock WELDER in welder_list)
-            { WELDER.CustomName = ($"[DY] WELDER {NUM2}");
-              WELDER.CustomData = ($"{NUM2}100"); NUM2++;
-              welder = (IMyShipWelder)WELDER;
+            foreach (IMyShipWelder WELDER in welder_list)
+            { WELDER.CustomName = ($"[DY] WELDER {NUM2}"); NUM2++;
+                welder = WELDER;
+
             }
 
-            foreach (IMyTerminalBlock PISTON in piston_list)
-            { PISTON.CustomName = ($"[DY] PISTON {NUM}");
-              PISTON.CustomData = ($"{NUM}100"); NUM++;
-              piston = (IMyPistonBase)PISTON;
-            }
-
-            Echo("All preps are done.\n" +
-                "Now type \"+RUN_DEEZ_SHIT\" for script to start.\n" +
-                "Double check that your projection is alligned correctly.");
-
-
-            // MECHANISM SHIT. DO NOT TOUCH ANYTHING, I DON'T KNOW HOW IT WORKS EITHER.
-            if (argument == "+RUN_DEEZ_SHIT")
+            foreach (IMyPistonBase PISTON in piston_list)
             {
-                Echo("SCRIPT STARTED");
-                if (projector.Enabled)
-                {
-                    Echo("у меня муха во рту");
-                }
+                PISTON.CustomName = ($"[DY] PISTON {NUM}");
+                PISTON.CustomData = ($"{NUM}100"); NUM++;
+                PISTON.SetValue("Velocity", Convert.ToSingle(-0.3));
+                piston = PISTON;
 
             }
 
+
+            // MECHANISM SHIT. DO NOT TOUCH ANYTHING, I DON'T KNOW WHY IT WORKS EITHER.
+
+
+            if (argument == "+R")
+            {
+                Echo("SCRIPT WORKING");
+                for (int remaining = projector.RemainingBlocks; remaining != 0; )
+                {
+                    if (welder.Enabled != true)
+                    {
+                        piston.Enabled = true;
+                    }
+
+                    if (welder.Enabled == true)
+                    {
+                        piston.Enabled = false;
+                    }
+                    if (remaining == 0) { break; }
+                } 
+                
+            }
         }
     }
 }
